@@ -12,7 +12,7 @@ const Button = ({ children, variant = "primary" }) => {
 
   return (
     <button
-      className={`flex items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold ${getVariantClasses()}`}
+      className={`flex items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold transition hover:opacity-75 ${getVariantClasses()}`}
     >
       {children}
     </button>

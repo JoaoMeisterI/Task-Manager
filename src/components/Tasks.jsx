@@ -10,8 +10,7 @@ import TASKS from "../constants/Tasks"
 import TaskItem from "./TaskItem"
 
 const Tasks = () => {
-  // eslint-disable-next-line no-unused-vars
-  const [tasks, setTasks] = React.useState(TASKS)
+  const [tasks] = React.useState(TASKS)
   const morningTasks = tasks.filter((task) => task.time === "morning")
   const afternoonTasks = tasks.filter((task) => task.time === "afternoon")
   const eveningTasks = tasks.filter((task) => task.time === "evening")
