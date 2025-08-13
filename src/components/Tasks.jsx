@@ -8,12 +8,36 @@ import MoonIcon from "../assets/icons/moon.svg?react"
 import React from "react"
 import TASKS from "../constants/Tasks"
 import TaskItem from "./TaskItem"
+import { toast } from "sonner"
 
 const Tasks = () => {
-  const [tasks] = React.useState(TASKS)
+  const [tasks, setTasks] = React.useState(TASKS)
   const morningTasks = tasks.filter((task) => task.time === "morning")
   const afternoonTasks = tasks.filter((task) => task.time === "afternoon")
   const eveningTasks = tasks.filter((task) => task.time === "evening")
+  const handleAlteraStatus = (tasks) => {
+    let newStatus = "completed"
+
+    if (tasks.status == "completed") {
+      newStatus = "not_started"
+    }
+
+    if (tasks.status == "not_started") {
+      newStatus = "in_progress"
+    }
+
+    setTasks((TASKS) =>
+      TASKS.map((task) =>
+        task.id === tasks.id ? { ...task, status: newStatus } : task
+      )
+    )
+  }
+
+  const handleRemoveItem = (id) => {
+    setTasks((TASKS) => TASKS.filter((task) => task.id !== id))
+
+    toast.success("Tarefa Removida Com Sucesso")
+  }
 
   return (
     <div className="w-full px-8 py-16">
@@ -41,19 +65,34 @@ const Tasks = () => {
         <div className="space-y-3">
           <TasksSeparator title="Manhã" icon={<SunIcon />} />
           {morningTasks.map((task) => (
-            <TaskItem key={task.id} tasks={task} />
+            <TaskItem
+              key={task.id}
+              tasks={task}
+              handleAlteraStatus={handleAlteraStatus}
+              handleRemoveItem={handleRemoveItem}
+            />
           ))}
         </div>
         <div className="my-6 space-y-3">
           <TasksSeparator title="Tarde" icon={<CloudIcon />} />
           {afternoonTasks.map((task) => (
-            <TaskItem key={task.id} tasks={task} />
+            <TaskItem
+              key={task.id}
+              tasks={task}
+              handleAlteraStatus={handleAlteraStatus}
+              handleRemoveItem={handleRemoveItem}
+            />
           ))}
         </div>
         <div className="space-y-3">
           <TasksSeparator title="Noite" icon={<MoonIcon />} />
           {eveningTasks.map((task) => (
-            <TaskItem key={task.id} tasks={task} />
+            <TaskItem
+              key={task.id}
+              tasks={task}
+              handleAlteraStatus={handleAlteraStatus}
+              handleRemoveItem={handleRemoveItem}
+            />
           ))}
         </div>
       </div>
