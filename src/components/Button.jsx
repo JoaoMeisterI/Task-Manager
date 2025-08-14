@@ -8,6 +8,10 @@ const Button = ({ children, variant = "primary", ...rest }) => {
     if (variant === "secundary") {
       return "bg-transparent text-[#818181]"
     }
+
+    if (variant === "terciary") {
+      return "bg-transparent bg-gray-400"
+    }
   }
 
   return (
