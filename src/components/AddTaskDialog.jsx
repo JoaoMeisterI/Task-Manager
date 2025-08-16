@@ -2,13 +2,30 @@ import { createPortal } from "react-dom"
 import Input from "./Input"
 import Button from "./Button"
 import { CSSTransition } from "react-transition-group"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import TimeSelect from "./TimeSelect"
 import "./AddTaskDialog.css"
+import { v4 } from "uuid"
 
 // eslint-disable-next-line react/prop-types
-const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
+const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   const nodeRef = useRef(null)
+  const [time, setTime] = useState()
+  const [title, setTitle] = useState()
+  const [description, setDescription] = useState()
+
+  const handleSaveClick = () => {
+    handleSubmit(
+      {
+        id: v4(),
+        title: title,
+        time: time,
+        description: description,
+        status: "not_started",
+      },
+      handleDialogClose()
+    )
+  }
 
   return createPortal(
     <CSSTransition
@@ -33,9 +50,14 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
               id="title"
               label="Titulo"
               placeholder="Insira o título da tarefa"
+              onChange={(event) => setTitle(event.target.value)}
             />
-            <TimeSelect />
-            <Input id="description" placeholder="Descreva a tarefa" />
+            <TimeSelect onChange={(event) => setTime(event.target.value)} />
+            <Input
+              id="description"
+              placeholder="Descreva a tarefa"
+              onChange={(event) => setDescription(event.target.value)}
+            />
             <div className="flex gap-3">
               <Button
                 size="large"
@@ -45,7 +67,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
               >
                 Cancelar
               </Button>
-              <Button size="large" className="w-full">
+              <Button size="large" className="w-full" onClick={handleSaveClick}>
                 Salvar
               </Button>
             </div>

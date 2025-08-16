@@ -16,7 +16,6 @@ import { toast } from "sonner"
 const Tasks = () => {
   const [tasks, setTasks] = useState(TASKS)
   const [AddTaskDialogIsOpen, setAddTaskDialogIsOpen] = useState(false)
-
   const morningTasks = tasks.filter((task) => task.time === "morning")
   const afternoonTasks = tasks.filter((task) => task.time === "afternoon")
   const eveningTasks = tasks.filter((task) => task.time === "evening")
@@ -48,6 +47,11 @@ const Tasks = () => {
     setAddTaskDialogIsOpen(false)
   }
 
+  const handleAddTask = (newTask) => {
+    setTasks([...tasks, newTask])
+    toast.success("Tarefa Adicionado Com Sucesso!")
+  }
+
   return (
     <div className="w-full px-8 py-16">
       <div className="flex w-full justify-between">
@@ -72,6 +76,7 @@ const Tasks = () => {
           <AddTaskDialog
             isOpen={AddTaskDialogIsOpen}
             handleDialogClose={handleDialogClose}
+            handleSubmit={handleAddTask}
           />
         </div>
       </div>
