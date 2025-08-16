@@ -2,7 +2,7 @@ import { createPortal } from "react-dom"
 import Input from "./Input"
 import Button from "./Button"
 import { CSSTransition } from "react-transition-group"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import TimeSelect from "./TimeSelect"
 import "./AddTaskDialog.css"
 import { v4 } from "uuid"
@@ -13,6 +13,15 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   const [time, setTime] = useState()
   const [title, setTitle] = useState()
   const [description, setDescription] = useState()
+
+  //Usando UseEffect Para limpar os campos
+  useEffect(() => {
+    if (isOpen) {
+      setTime("morning")
+      setTitle("")
+      setDescription("")
+    }
+  }, [isOpen])
 
   const handleSaveClick = () => {
     handleSubmit(
@@ -50,12 +59,14 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
               id="title"
               label="Titulo"
               placeholder="Insira o título da tarefa"
+              value={title}
               onChange={(event) => setTitle(event.target.value)}
             />
             <TimeSelect onChange={(event) => setTime(event.target.value)} />
             <Input
               id="description"
               placeholder="Descreva a tarefa"
+              value={description}
               onChange={(event) => setDescription(event.target.value)}
             />
             <div className="flex gap-3">
@@ -63,6 +74,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                 size="large"
                 variant="terciary"
                 className="w-full"
+                value={time}
                 onClick={handleDialogClose}
               >
                 Cancelar
