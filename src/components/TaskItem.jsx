@@ -1,8 +1,5 @@
-import CheckIcon from "../assets/icons/check.svg?react"
-import LoadIcon from "../assets/icons/loader.svg?react"
-import DetailsIcons from "../assets/icons/details.svg?react"
+import { CheckIcon, LoaderIcon, TrashIcon, DetailsIcon } from "../assets/icons"
 import Button from "./Button"
-import TrashIcon from "../assets/icons/trash.svg?react"
 
 /* eslint-disable react/prop-types */
 const TaskItem = ({ tasks, handleAlteraStatus, handleRemoveItem }) => {
@@ -34,7 +31,7 @@ const TaskItem = ({ tasks, handleAlteraStatus, handleRemoveItem }) => {
           />
           {tasks.status === "completed" && <CheckIcon />}
           {tasks.status === "in_progress" && (
-            <LoadIcon className="animate-spin" />
+            <LoaderIcon className="animate-spin" />
           )}
         </label>
         <p>{tasks.title}</p>
@@ -44,7 +41,7 @@ const TaskItem = ({ tasks, handleAlteraStatus, handleRemoveItem }) => {
           <TrashIcon className="text-red-500" />
         </Button>
         <a href="#" className="transition hover:opacity-75">
-          <DetailsIcons />
+          <DetailsIcon />
         </a>
       </div>
     </div>
