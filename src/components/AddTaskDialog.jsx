@@ -13,8 +13,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   const [time, setTime] = useState()
   const [title, setTitle] = useState()
   const [description, setDescription] = useState()
+  const [errors, setErrors] = useState([])
 
-  //Usando UseEffect Para limpar os campos
   useEffect(() => {
     if (isOpen) {
       setTime("morning")
@@ -24,6 +24,35 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   }, [isOpen])
 
   const handleSaveClick = () => {
+    const newErros = []
+
+    if (!title.trim()) {
+      newErros.push({
+        inputName: "title",
+        message: "O Título é Obrigatório",
+      })
+    }
+
+    if (!time.trim()) {
+      newErros.push({
+        inputName: "time",
+        message: "O Tempo é Obrigatório",
+      })
+    }
+
+    if (!description.trim()) {
+      newErros.push({
+        inputName: "description",
+        message: "Descrição é Obrigatório",
+      })
+    }
+
+    setErrors(newErros)
+
+    if (newErros.length > 0) {
+      return
+    }
+
     handleSubmit(
       {
         id: v4(),
@@ -35,6 +64,12 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
       handleDialogClose()
     )
   }
+
+  const titleError = errors.find((error) => error.inputName === "title")
+  const descriptionError = errors.find(
+    (error) => error.inputName === "description"
+  )
+  const timeError = errors.find((error) => error.inputName === "time")
 
   return createPortal(
     <CSSTransition
@@ -62,13 +97,28 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
               value={title}
               onChange={(event) => setTitle(event.target.value)}
             />
+            {titleError && (
+              <p className="text-left text-xs text-red-500">
+                {titleError.message}
+              </p>
+            )}
             <TimeSelect onChange={(event) => setTime(event.target.value)} />
+            {timeError && (
+              <p className="text-left text-xs text-red-500">
+                {timeError.message}
+              </p>
+            )}
             <Input
               id="description"
               placeholder="Descreva a tarefa"
               value={description}
               onChange={(event) => setDescription(event.target.value)}
             />
+            {descriptionError && (
+              <p className="text-left text-xs text-red-500">
+                {descriptionError.message}
+              </p>
+            )}
             <div className="flex gap-3">
               <Button
                 size="large"
