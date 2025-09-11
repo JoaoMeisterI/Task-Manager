@@ -1,21 +1,22 @@
 import PropTypes from "prop-types"
+import { tv } from "tailwind-variants"
 
 const SidebarButton = ({ children, variant }) => {
-  const getVariantClasses = () => {
-    if (variant === "unselected") {
-      return "text-[#35383E]"
-    }
-
-    if (variant === "selected") {
-      return "rounded-lg bg-[#E6F7F8] text-[#00ADB5]"
-    }
-  }
+  const sidebarStyle = tv({
+    base: "flex h-10 p-2 gap-4 items-center",
+    variants: {
+      color: {
+        unselected: "text-brand-dark-blue",
+        selected: "rounded-lg bg-[#E6F7F8] text-brand-primary",
+      },
+    },
+    defaultVariants: {
+      color: "unselected",
+    },
+  })
 
   return (
-    <a
-      href="#"
-      className={`flex items-center gap-2 px-6 py-3 ${getVariantClasses()}`}
-    >
+    <a href="#" className={sidebarStyle({ color: variant })}>
       {children}
     </a>
   )

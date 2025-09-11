@@ -7,18 +7,30 @@ import {
 } from "../assets/icons"
 import TasksSeparator from "./TasksSeparator"
 import Button from "./Button"
-import { useState } from "react"
-import TASKS from "../constants/Tasks"
+import { useEffect, useState } from "react"
 import TaskItem from "./TaskItem"
 import AddTaskDialog from "./AddTaskDialog"
 import { toast } from "sonner"
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState(TASKS)
+  const [tasks, setTasks] = useState([])
   const [AddTaskDialogIsOpen, setAddTaskDialogIsOpen] = useState(false)
   const morningTasks = tasks.filter((task) => task.time === "morning")
   const afternoonTasks = tasks.filter((task) => task.time === "afternoon")
   const eveningTasks = tasks.filter((task) => task.time === "evening")
+
+  //fazendo o unmounting do componente
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const response = await fetch("http://localhost:3000/tasks", {
+        method: "GET",
+      })
+      const tasks = await response.json()
+      setTasks(tasks)
+    }
+    fetchTasks()
+  }, [])
+
   const handleAlteraStatus = (tasks) => {
     let newStatus = "completed"
 
@@ -39,7 +51,6 @@ const Tasks = () => {
 
   const handleRemoveItem = (id) => {
     setTasks((TASKS) => TASKS.filter((task) => task.id !== id))
-
     toast.success("Tarefa Removida Com Sucesso")
   }
 
@@ -47,16 +58,18 @@ const Tasks = () => {
     setAddTaskDialogIsOpen(false)
   }
 
-  const handleAddTask = (newTask) => {
+  const handleAddTask = async (newTask) => {
+    console.log("task nova")
+    console.log(newTask)
     setTasks([...tasks, newTask])
-    toast.success("Tarefa Adicionado Com Sucesso!")
+    toast.success("Tarefa adicionada com sucesso!")
   }
 
   return (
     <div className="w-full px-8 py-16">
       <div className="flex w-full justify-between">
         <div>
-          <span className="text-xs font-semibold text-[#00ADB5]">
+          <span className="text-xs font-semibold text-brand-primary">
             Minhas Tarefas
           </span>
           <h2 className="text-xl font-semibold">Minhas Tarefas</h2>
@@ -68,7 +81,10 @@ const Tasks = () => {
             <TrashIcon />
           </Button>
 
-          <Button onClick={() => setAddTaskDialogIsOpen(true)}>
+          <Button
+            onClick={() => setAddTaskDialogIsOpen(true)}
+            variant="primary"
+          >
             <AddIcon />
             Adicionar Tarefa
           </Button>
