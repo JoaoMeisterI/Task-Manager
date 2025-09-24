@@ -7,62 +7,50 @@ import {
 } from "../assets/icons"
 import TasksSeparator from "./TasksSeparator"
 import Button from "./Button"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import TaskItem from "./TaskItem"
 import AddTaskDialog from "./AddTaskDialog"
 import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query"
+import { useGetTasks } from "../hooks/data/use-get-tasks"
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState([])
+  const queryClient = useQueryClient()
+  const { data: tasks } = useGetTasks()
   const [AddTaskDialogIsOpen, setAddTaskDialogIsOpen] = useState(false)
-  const morningTasks = tasks.filter((task) => task.time === "morning")
-  const afternoonTasks = tasks.filter((task) => task.time === "afternoon")
-  const eveningTasks = tasks.filter((task) => task.time === "evening")
+  const morningTasks = tasks?.filter((task) => task.time === "morning")
+  const afternoonTasks = tasks?.filter((task) => task.time === "afternoon")
+  const eveningTasks = tasks?.filter((task) => task.time === "evening")
 
-  //fazendo o unmounting do componente
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await fetch("http://localhost:3000/tasks", {
-        method: "GET",
-      })
-      const tasks = await response.json()
-      setTasks(tasks)
-    }
-    fetchTasks()
-  }, [])
+  const handleAlteraStatus = (taskId) => {
+    const newTasks = tasks.map((task) => {
+      if (task.id !== taskId) {
+        return task
+      }
 
-  const handleAlteraStatus = (tasks) => {
-    let newStatus = "completed"
+      if (task.status === "not_started") {
+        toast.success("Tarefa iniciada com sucesso!")
+        return { ...task, status: "in_progress" }
+      }
 
-    if (tasks.status == "completed") {
-      newStatus = "not_started"
-    }
+      if (task.status === "in_progress") {
+        toast.success("Tarefa concluída com sucesso!")
+        return { ...task, status: "completed" }
+      }
 
-    if (tasks.status == "not_started") {
-      newStatus = "in_progress"
-    }
+      if (task.status === "completed") {
+        toast.success("Tarefa reiniciada com sucesso!")
+        return { ...task, status: "not_started" }
+      }
 
-    setTasks((TASKS) =>
-      TASKS.map((task) =>
-        task.id === tasks.id ? { ...task, status: newStatus } : task
-      )
-    )
-  }
+      return task
+    })
 
-  const handleRemoveItem = (id) => {
-    setTasks((TASKS) => TASKS.filter((task) => task.id !== id))
-    toast.success("Tarefa Removida Com Sucesso")
+    queryClient.setQueryData(["tasks"], newTasks)
   }
 
   const handleDialogClose = () => {
     setAddTaskDialogIsOpen(false)
-  }
-
-  const handleAddTask = async (newTask) => {
-    console.log("task nova")
-    console.log(newTask)
-    setTasks([...tasks, newTask])
-    toast.success("Tarefa adicionada com sucesso!")
   }
 
   return (
@@ -92,41 +80,37 @@ const Tasks = () => {
           <AddTaskDialog
             isOpen={AddTaskDialogIsOpen}
             handleDialogClose={handleDialogClose}
-            handleSubmit={handleAddTask}
           />
         </div>
       </div>
       <div className="rounded-xl bg-white p-6">
         <div className="space-y-3">
           <TasksSeparator title="Manhã" icon={<SunIcon />} />
-          {morningTasks.map((task) => (
+          {morningTasks?.map((task) => (
             <TaskItem
               key={task.id}
               tasks={task}
               handleAlteraStatus={handleAlteraStatus}
-              handleRemoveItem={handleRemoveItem}
             />
           ))}
         </div>
         <div className="my-6 space-y-3">
           <TasksSeparator title="Tarde" icon={<CloudIcon />} />
-          {afternoonTasks.map((task) => (
+          {afternoonTasks?.map((task) => (
             <TaskItem
               key={task.id}
               tasks={task}
               handleAlteraStatus={handleAlteraStatus}
-              handleRemoveItem={handleRemoveItem}
             />
           ))}
         </div>
         <div className="space-y-3">
           <TasksSeparator title="Noite" icon={<MoonIcon />} />
-          {eveningTasks.map((task) => (
+          {eveningTasks?.map((task) => (
             <TaskItem
               key={task.id}
               tasks={task}
               handleAlteraStatus={handleAlteraStatus}
-              handleRemoveItem={handleRemoveItem}
             />
           ))}
         </div>

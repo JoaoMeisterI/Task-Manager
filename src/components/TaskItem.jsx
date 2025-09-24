@@ -1,25 +1,22 @@
-import { useState } from "react"
 import { CheckIcon, LoaderIcon, TrashIcon, DetailsIcon } from "../assets/icons"
 import Button from "./Button"
 import { toast } from "sonner"
 import { Link } from "react-router-dom"
+import { useDeleteTasks } from "../hooks/data/use-delete-tasks"
 
 /* eslint-disable react/prop-types */
-const TaskItem = ({ tasks, handleAlteraStatus, handleRemoveItem }) => {
-  const [updateIcon, setUpdateIcon] = useState(false)
+const TaskItem = ({ tasks, handleAlteraStatus }) => {
+  const { mutate, isPeding } = useDeleteTasks(tasks?.id)
 
-  const deleteItem = async (taskId) => {
-    console.log(taskId)
-    setUpdateIcon(true)
-    const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-      method: "DELETE",
+  const deleteItem = async () => {
+    mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Tarefa Removida com Sucesso")
+      },
+      onError: () => {
+        toast.error("Erro ao deletar a tarefa")
+      },
     })
-    if (!response.ok) {
-      setUpdateIcon(false)
-      return toast.error("Erro ao Deletar a tarefa. Tente Novamente")
-    }
-    setUpdateIcon(false)
-    handleRemoveItem(taskId)
   }
 
   const getStatusClasses = () => {
@@ -46,7 +43,7 @@ const TaskItem = ({ tasks, handleAlteraStatus, handleRemoveItem }) => {
             type="checkbox"
             checked={tasks.status === "completed"}
             className="absolute h-full w-full cursor-pointer opacity-0"
-            onChange={() => handleAlteraStatus(tasks)}
+            onChange={() => handleAlteraStatus(tasks.id)}
           />
           {tasks.status === "completed" && <CheckIcon />}
           {tasks.status === "in_progress" && (
@@ -56,8 +53,8 @@ const TaskItem = ({ tasks, handleAlteraStatus, handleRemoveItem }) => {
         <p>{tasks.title}</p>
       </div>
       <div className="flex">
-        <Button variant="secundary" onClick={() => deleteItem(tasks.id)}>
-          {updateIcon ? (
+        <Button variant="secundary" onClick={() => deleteItem()}>
+          {isPeding ? (
             <LoaderIcon className="animate-spin" />
           ) : (
             <TrashIcon className="text-red-500" />

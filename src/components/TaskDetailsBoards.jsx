@@ -1,53 +1,93 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import { Link, useNavigate } from "react-router-dom"
 import { ArrowIcon } from "../assets/icons"
 import Button from "./Button"
 import { TrashIcon } from "../assets/icons"
 import Input from "./Input"
 import TimeSelect from "./TimeSelect"
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { useForm } from "react-hook-form"
+import {
+  QueryClientProvider,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query"
+import { useUpdateTask } from "../hooks/data/use-update-tasks"
+import { useDeleteTasks } from "../hooks/data/use-delete-tasks"
 
 // eslint-disable-next-line react/prop-types
 const TaskDetailsBoards = ({ task }) => {
-  const descriptionRef = useRef()
-  const titleRef = useRef()
   const timeRef = useRef()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { mutate: updateTask } = useUpdateTask(task?.id)
+  const { mutate: deleteTask } = useDeleteTasks(task?.id)
 
-  const handleSalvarTask = async () => {
-    const updateTask = {
+  const {
+    register,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    reset,
+  } = useForm({
+    defaultValues: {
+      title: task?.title,
+      description: task?.description,
+    },
+  })
+
+  //esse reset a gente usa para atribuir valores no forms quando da primeira vez o valor setado não está com o valor que precisa
+  useEffect(() => {
+    reset({
+      title: task?.title,
+      description: task?.description,
+    })
+  }, [task, reset])
+
+  //ele usou esse navigate -1 no lugar de um link
+  const handleButtonReturn = () => {
+    navigate(-1)
+    ;("")
+  }
+
+  //o data é os valores do input no formulário
+  const handleSalvarTask = async (data) => {
+    const updateNTask = {
       // eslint-disable-next-line react/prop-types
       id: task.id,
-      title: titleRef.current.value,
+      title: data.title,
       time: timeRef.current.value,
-      description: descriptionRef.current.value,
+      description: data.description,
       // eslint-disable-next-line react/prop-types
       status: task.status,
     }
-
     // eslint-disable-next-line react/prop-types
-    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-      method: "PUT",
-      body: JSON.stringify(updateTask),
+    toast.success("Tarefa atualizada com sucesso!")
+
+    updateTask(updateNTask, {
+      onSuccess: () => {
+        toast.success("Tarefa atualizada com sucesso!")
+      },
+      onError: () => {
+        toast.error("Erro ao atualizar a tarefa")
+      },
     })
 
-    if (!response.ok) {
-      return toast.error("Erro ao atualizar Tarefa, Tente Novamente")
-    }
-
-    toast.success("Tarefa atualizada com sucesso!")
     navigate("/")
   }
 
   const handleDeleteTask = async () => {
     // eslint-disable-next-line react/prop-types
-    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-      method: "DELETE",
-    })
 
-    if (!response.ok) {
-      return toast.error("Erro ao atualizar Tarefa, Tente Novamente")
-    }
+    deleteTask(undefined, {
+      onSuccess: () => {
+        toast.success("Tarefa Removida com Sucesso")
+      },
+      onError: () => {
+        toast.error("Erro ao deletar a tarefa")
+      },
+    })
 
     toast.success("Tarefa Removida com sucesso!")
     navigate("/")
@@ -56,11 +96,12 @@ const TaskDetailsBoards = ({ task }) => {
   return (
     <div className="m-10 w-full">
       <div>
-        <Link to={`/`}>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary">
-            <ArrowIcon className="size-5" />
-          </div>
-        </Link>
+        <Button
+          onClick={handleButtonReturn}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary"
+        >
+          <ArrowIcon className="size-5" />
+        </Button>
         <div className="mt-5 flex gap-2">
           <p className="text-brand-text-gray">Minhas Tarefas -- </p>
           <p className="font-semibold text-brand-primary">Ir para Academia</p>
@@ -75,35 +116,47 @@ const TaskDetailsBoards = ({ task }) => {
           </Button>
         </div>
       </div>
-      <div className="mt-6 rounded-sm bg-brand-white p-4">
-        <div className="flex flex-col space-y-4">
-          <Input
-            id="title"
-            label="Nome"
-            ref={titleRef}
-            // eslint-disable-next-line react/prop-types
-            defaultValue={task?.title}
-          />
-
-          {/* eslint-disable-next-line react/prop-types */}
-          <TimeSelect ref={timeRef} defaultValue={task?.time} />
-          <Input
-            id="descricao"
-            label="Descrição"
-            ref={descriptionRef}
-            // eslint-disable-next-line react/prop-types
-            defaultValue={task?.description}
-          />
+      <form onSubmit={handleSubmit(handleSalvarTask)}>
+        <div className="mt-6 rounded-sm bg-brand-white p-4">
+          <div className="flex flex-col space-y-4">
+            <Input
+              id="title"
+              label="Nome"
+              // eslint-disable-next-line react/prop-types
+              //Registrando o campo do formulário e colocando validações
+              {...register("title", {
+                required: "O Título é Obrigatório",
+                validate: (value) => {
+                  if (!value.trim()) {
+                    return "O título não pode ser vazio."
+                  }
+                  return true
+                },
+              })}
+            />
+            <p>{errors?.title?.message}</p>
+            {/* eslint-disable-next-line react/prop-types */}
+            <TimeSelect defaultValue={task?.time} ref={timeRef} />
+            <Input
+              id="descricao"
+              label="Descrição"
+              // eslint-disable-next-line react/prop-types
+              {...register("description", {
+                required: "A descrição é obrigatória",
+              })}
+            />
+            <p>{errors?.description?.message}</p>
+          </div>
         </div>
-      </div>
-      <div className="mt-4 flex justify-end gap-4">
-        <Button variant="gray" size="large">
-          <Link to="/">Cancelar</Link>
-        </Button>
-        <Button variant="primary" size="large" onClick={handleSalvarTask}>
-          Salvar
-        </Button>
-      </div>
+        <div className="mt-4 flex justify-end gap-4">
+          <Button variant="gray" size="large">
+            <Link to="/">Cancelar</Link>
+          </Button>
+          <Button variant="primary" size="large" type="submit">
+            Salvar
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }

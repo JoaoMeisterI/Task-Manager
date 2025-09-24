@@ -7,10 +7,4 @@ const TasksSeparator = ({ title, icon }) => {
     </div>
   )
 }
-
-//COMPOSITION PATTERN
-//const TasksSeparatorTitle = ({children}) => {
-// return <p className="text-sm">{children}</p>
-//}
-
 export default TasksSeparator
