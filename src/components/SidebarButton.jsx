@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 import PropTypes from "prop-types"
+import { NavLink } from "react-router-dom"
 import { tv } from "tailwind-variants"
 
-const SidebarButton = ({ children, variant }) => {
+const SidebarButton = ({ children, variant, href }) => {
   const sidebarStyle = tv({
     base: "flex h-10 p-2 gap-4 items-center",
     variants: {
@@ -16,15 +18,21 @@ const SidebarButton = ({ children, variant }) => {
   })
 
   return (
-    <a href="#" className={sidebarStyle({ color: variant })}>
+    <NavLink
+      to={href}
+      className={({ isActive }) =>
+        sidebarStyle({ color: isActive ? "selected" : "unselected" })
+      }
+    >
       {children}
-    </a>
+    </NavLink>
   )
 }
 
 SidebarButton.propTypes = {
   children: PropTypes.node.isRequired,
   variant: PropTypes.oneOf(["selected", "unselected"]).isRequired,
+  href: PropTypes.string, // opcional, mas recomendado declarar
 }
 
 export default SidebarButton

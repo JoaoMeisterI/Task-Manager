@@ -1,23 +1,15 @@
-import {
-  AddIcon,
-  SunIcon,
-  TrashIcon,
-  CloudIcon,
-  MoonIcon,
-} from "../assets/icons"
+import { SunIcon, CloudIcon, MoonIcon } from "../assets/icons"
 import TasksSeparator from "./TasksSeparator"
-import Button from "./Button"
-import { useState } from "react"
 import TaskItem from "./TaskItem"
-import AddTaskDialog from "./AddTaskDialog"
+import TaskHeader from "./TaskHeader"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { useGetTasks } from "../hooks/data/use-get-tasks"
+import { taskQueryKeys } from "../keys/queries"
 
 const Tasks = () => {
   const queryClient = useQueryClient()
   const { data: tasks } = useGetTasks()
-  const [AddTaskDialogIsOpen, setAddTaskDialogIsOpen] = useState(false)
   const morningTasks = tasks?.filter((task) => task.time === "morning")
   const afternoonTasks = tasks?.filter((task) => task.time === "afternoon")
   const eveningTasks = tasks?.filter((task) => task.time === "evening")
@@ -46,43 +38,12 @@ const Tasks = () => {
       return task
     })
 
-    queryClient.setQueryData(["tasks"], newTasks)
-  }
-
-  const handleDialogClose = () => {
-    setAddTaskDialogIsOpen(false)
+    queryClient.setQueryData(taskQueryKeys.getAll(), newTasks)
   }
 
   return (
     <div className="w-full px-8 py-16">
-      <div className="flex w-full justify-between">
-        <div>
-          <span className="text-xs font-semibold text-brand-primary">
-            Minhas Tarefas
-          </span>
-          <h2 className="text-xl font-semibold">Minhas Tarefas</h2>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button variant="secundary">
-            Limpar Tarefas
-            <TrashIcon />
-          </Button>
-
-          <Button
-            onClick={() => setAddTaskDialogIsOpen(true)}
-            variant="primary"
-          >
-            <AddIcon />
-            Adicionar Tarefa
-          </Button>
-
-          <AddTaskDialog
-            isOpen={AddTaskDialogIsOpen}
-            handleDialogClose={handleDialogClose}
-          />
-        </div>
-      </div>
+      <TaskHeader titulo="Minhas Tarefas" />
       <div className="rounded-xl bg-white p-6">
         <div className="space-y-3">
           <TasksSeparator title="Manhã" icon={<SunIcon />} />

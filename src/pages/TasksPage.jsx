@@ -1,10 +1,10 @@
-import Sidebar from "./components/Sidebar"
-import Tasks from "./components/Tasks"
 import { Toaster } from "sonner"
+import Sidebar from "../components/Sidebar"
+import Tasks from "../components/Tasks"
 
-function App() {
+function TasksPage() {
   return (
-    <div className="flex gap-9">
+    <div className="flex">
       <Toaster
         toastOptions={{
           style: {
@@ -18,4 +18,4 @@ function App() {
   )
 }
 
-export default App
+export default TasksPage
