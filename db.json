@@ -2,49 +2,10 @@
   "tasks": [
     {
       "id": "983b2a7c-3dbc-4cfe-aae8-a25336f5d8b3",
-      "status": "not_started"
-    },
-    {
-      "id": "f794128c-6eae-4c2f-850e-fa161d03edc3",
-      "title": "weq",
-      "time": "evening",
-      "description": "qwe",
-      "status": "not_started"
-    },
-    {
-      "id": "water1",
-      "title": "500 ml",
-      "time": "water",
-      "description": "500",
-      "status": "not_started"
-    },
-    {
-      "id": "water2",
-      "title": "1 litro",
-      "time": "water",
-      "description": "1000",
-      "status": "not_started"
-    },
-    {
-      "id": "water3",
-      "title": "1.5 litros",
-      "time": "water",
-      "description": "1500",
-      "status": "not_started"
-    },
-    {
-      "id": "water4",
       "title": "2 litros",
-      "time": "water",
+      "time": "evening",
       "description": "2000",
-      "status": "not_started"
-    },
-    {
-      "id": "water5",
-      "title": "2.5 litros",
-      "time": "water",
-      "description": "2500",
-      "status": "not_started"
+      "status": "completed"
     }
   ]
 }
